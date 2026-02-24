@@ -1,0 +1,33 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply m-0 bg-soil-50 font-body text-soil-900 antialiased;
+  }
+}
+
+@layer components {
+  .container-wide {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .card-base {
+    @apply rounded-2xl border border-leaf-100 bg-white p-5 shadow-soft;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-leaf-600 px-5 py-3 font-semibold text-white transition hover:bg-leaf-700 focus:outline-none focus:ring-2 focus:ring-leaf-400 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-leaf-300 bg-white px-5 py-3 font-semibold text-leaf-700 transition hover:bg-leaf-50 focus:outline-none focus:ring-2 focus:ring-leaf-300 focus:ring-offset-2;
+  }
+}
