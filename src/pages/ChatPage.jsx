@@ -15,6 +15,19 @@ function ChatPage() {
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
 
+  const getErrorReply = (error) => {
+    if (error?.code === "missing_key") {
+      return "Gemini API key is missing. Please set VITE_GEMINI_API_KEY in your .env file.";
+    }
+    if (error?.response?.status === 429) {
+      return "Free API limit reached. Please try again after some time.";
+    }
+    if (error?.response?.status === 400) {
+      return "Invalid API request. Please verify Gemini model and API key configuration.";
+    }
+    return "Unable to reach AI service right now. Please try again.";
+  };
+
   const sendMessage = async (text) => {
     const trimmed = text.trim();
     if (!trimmed || typing) return;
@@ -24,14 +37,13 @@ function ChatPage() {
     setTyping(true);
 
     try {
-      const data = await getChatReply(trimmed);
+      const history = messages.slice(1);
+      const data = await getChatReply(trimmed, history);
       setMessages((prev) => [...prev, { text: data.reply || demoReply, isUser: false }]);
-    } catch {
-      setTimeout(() => {
-        setMessages((prev) => [...prev, { text: demoReply, isUser: false }]);
-      }, 700);
+    } catch (error) {
+      setMessages((prev) => [...prev, { text: getErrorReply(error), isUser: false }]);
     } finally {
-      setTimeout(() => setTyping(false), 700);
+      setTyping(false);
     }
   };
 
@@ -65,6 +77,7 @@ function ChatPage() {
               placeholder="Type your farming question..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              disabled={typing}
             />
             <button type="submit" className="btn-primary px-4" aria-label="Send message">
               <SendHorizontal className="h-5 w-5" />
