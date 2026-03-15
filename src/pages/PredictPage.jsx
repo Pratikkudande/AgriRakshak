@@ -4,7 +4,6 @@ import UploadDropzone from "../components/UploadDropzone";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ResultCard from "../components/ResultCard";
 import { predictDisease } from "../services/predictService";
-import { diseaseSamples } from "../assets/mockData";
 
 function PredictPage() {
   const [file, setFile] = useState(null);
@@ -24,14 +23,13 @@ function PredictPage() {
     if (!file) return;
     setLoading(true);
     setError("");
+    setResult(null);
 
     try {
       const data = await predictDisease(file);
       setResult(data);
-    } catch {
-      const fallback = diseaseSamples[Math.floor(Math.random() * diseaseSamples.length)];
-      setResult(fallback);
-      setError("Backend unavailable. Showing demo prediction data.");
+    } catch (predictionError) {
+      setError(predictionError.message || "Prediction failed. Please try again.");
     } finally {
       setLoading(false);
     }

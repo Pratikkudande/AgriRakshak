@@ -1,5 +1,9 @@
 node_modules/
 dist/
+.venv/
+__pycache__/
+*.pyc
+*.log
 .env
 .env.local
 .env.*.local
