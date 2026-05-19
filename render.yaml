@@ -1,0 +1,28 @@
+services:
+  # Flask ML Backend
+  - type: web
+    name: agrirakshak-ml
+    runtime: python
+    buildCommand: pip install -r ml_service/requirements.txt
+    startCommand: gunicorn --chdir ml_service app:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+  # React Frontend
+  - type: web
+    name: agrirakshak-frontend
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false          # set manually in Render dashboard after ML service deploys
+      - key: VITE_GEMINI_API_KEY
+        sync: false          # set manually in Render dashboard
+      - key: VITE_GEMINI_MODEL
+        value: gemini-2.5-flash
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
