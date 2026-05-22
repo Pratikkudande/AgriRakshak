@@ -1,13 +1,22 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
+# Reduce TensorFlow memory footprint before importing tf
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
 import numpy as np
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
 from PIL import Image
+import tensorflow as tf
 from tensorflow import keras
 
+# Limit CPU threads to reduce memory usage on free tier
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_PATH = BASE_DIR / "mobilenetv2_grape_disease_model.h5"
