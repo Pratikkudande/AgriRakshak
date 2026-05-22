@@ -50,7 +50,7 @@ def load_model():
 
 model = load_model()
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=False)
 
 
 def preprocess_image(file_storage) -> np.ndarray:
@@ -67,6 +67,8 @@ def health_check():
 
 @app.post("/api/predict")
 def predict():
+    if request.method == "OPTIONS":
+        return "", 204
     image = request.files.get("image")
     if image is None or not image.filename:
         return jsonify({"error": "Please upload a grape leaf image."}), 400
