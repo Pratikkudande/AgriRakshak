@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
 from PIL import Image
 from tensorflow import keras
@@ -50,7 +50,20 @@ def load_model():
 
 model = load_model()
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=False)
+CORS(app)
+
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    return response
+
+
+@app.route("/api/predict", methods=["OPTIONS"])
+def predict_options():
+    return make_response("", 204)
 
 
 def preprocess_image(file_storage) -> np.ndarray:
@@ -67,8 +80,6 @@ def health_check():
 
 @app.post("/api/predict")
 def predict():
-    if request.method == "OPTIONS":
-        return "", 204
     image = request.files.get("image")
     if image is None or not image.filename:
         return jsonify({"error": "Please upload a grape leaf image."}), 400
